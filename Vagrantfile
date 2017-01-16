@@ -14,6 +14,12 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     trusty.vm.box = "ubuntu/trusty64"
   end
 
+  config.vm.define "jessie" do |jessie|
+    jessie.vm.box = "debian/contrib-jessie64"
+    jessie.vm.synced_folder ".", "/vagrant",
+      type: 'virtualbox'
+  end
+
   config.ssh.forward_agent = true
   config.vm.provider "virtualbox" do |v|
     v.memory = 1024
