@@ -2,7 +2,7 @@
 - hosts: all
   vars_prompt:
    - name: version
-     prompt: "CKAN Version"
+     prompt: "CKAN Version (branch or tag)"
      private: True
    - name: iteration
      prompt: "Iteration"
@@ -83,7 +83,7 @@
       action: pip name=virtualenv
 
     - name: pull ckan version
-      action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version=ckan-{{ version }}
+      action: git repo=https://github.com/ckan/ckan dest=/usr/lib/ckan/default/src/ckan version={{ version }}
 
     - name: check requirements file name
       shell: "[ -f /usr/lib/ckan/default/src/ckan/pip-requirements.txt ] && echo 'pip-requirements.txt' || echo 'requirements.txt'"
@@ -105,7 +105,7 @@
       when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '<')
 
     - name: pull datapusher version (ckan>=2.3)
-      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.8
+      action: git repo=https://github.com/ckan/datapusher dest=/usr/lib/ckan/datapusher/src/datapusher version=0.0.9
       when: datapusher == 'y' and ckan_version.stdout|version_compare('2.3', '>=')
 
     - name: install requirements and make virtualenv for datapusher
@@ -156,7 +156,7 @@
               --url='http://ckan.org'
               --after-install=/tmp/after_web.sh
               --iteration {{ ansible_distribution_release }}{{ iteration }}
-              --version {{ version }}
+              --version {{ ckan_version.stdout }}
               --depends nginx --depends apache2 --depends libapache2-mod-wsgi --depends libpq5
               --config-files /etc/apache2/sites-available/ckan_default.conf --config-files /etc/nginx/sites-available/ckan --config-files /etc/ckan/default/who.ini
               /usr/lib/ckan/ /etc/ckan/ /usr/bin/ckan /etc/cron.daily/remove_old_sessions /etc/apache2/sites-available/ckan_default.conf /etc/nginx/sites-available/ckan
